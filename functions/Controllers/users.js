@@ -12,7 +12,7 @@ exports.signup = (req, res) => {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    handle: req.body.handle,
+    userName: req.body.userName,
   };
 
   const { valid, errors } = validateSignupData(newUser);
@@ -20,11 +20,13 @@ exports.signup = (req, res) => {
   if (!valid) return res.status(400).json(errors);
 
   let token, userId;
-  db.doc(`/users/${newUser.handle}`)
+  db.doc(`/users/${newUser.userName}`)
     .get()
     .then((doc) => {
       if (doc.exists) {
-        return res.status(400).json({ handle: "this email has already taken" });
+        return res
+          .status(400)
+          .json({ userName: "this email has already taken" });
       } else {
         return firebase
           .auth()
@@ -38,12 +40,12 @@ exports.signup = (req, res) => {
     .then((idToken) => {
       token = idToken;
       const userCredentials = {
-        handle: newUser.handle,
+        userName: newUser.userName,
         email: newUser.email,
         createdAt: new Date().toISOString(),
         userId,
       };
-      return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+      return db.doc(`/users/${newUser.userName}`).set(userCredentials);
     })
     .then(() => {
       return res.status(201).json({ token });
@@ -63,7 +65,6 @@ exports.login = (req, res) => {
     email: req.body.email,
     password: req.body.password,
   };
-
   const { valid, errors } = validateLoginData(user);
 
   if (!valid) return res.status(400).json(errors);
@@ -82,7 +83,7 @@ exports.login = (req, res) => {
       if (err.code === "auth/wrong-password") {
         return res
           .status(403)
-          .json({ general: "Wrong credentials, please try agan" });
+          .json({ general: "Wrong credentials, please try again" });
       } else return res.status(500).json({ error: err.code });
     });
 };
