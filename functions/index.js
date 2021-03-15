@@ -1,12 +1,14 @@
 const functions = require("firebase-functions");
-const config = require("./Utils/config");
-const { signup, login } = require("./Controllers/users");
+// const config = require("./Utils/config");
+// const FBAuth = require("./Utils/fbauth");
 const cors = require("cors");
 const app = require("express")();
-// const FBAuth = require("./Utils/fbauth");
 app.use(cors());
+var indexRouter = require("./routes/index");
 
-app.post("/signup", signup);
-app.post("/login", login);
+app.use("/", indexRouter);
+
+// app.post("/signup", signup);
+// app.post("/login", login);
 
 exports.api = functions.https.onRequest(app);

@@ -92,16 +92,3 @@ exports.login = (req, res) => {
       } else return res.status(500).json({ error: err.code });
     });
 };
-
-// exports.getCurrentUser = (req, res) => {
-//   var user = firebase.auth().currentUser;
-//   var name, email, userId;
-
-//   if (user != null) {
-//     name = user.displayName;
-//     email = user.email;
-//     userId = user.userId; // The user's ID, unique to the Firebase project. Do NOT use
-//     // this value to authenticate with your backend server, if
-//     // you have one. Use User.getToken() instead.
-//   }
-// };
