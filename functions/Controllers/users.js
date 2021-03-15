@@ -1,6 +1,7 @@
 const { db } = require("../Utils/admin");
 const config = require("../Utils/config");
 const firebase = require("firebase");
+var bcrypt = require("bcrypt");
 firebase.initializeApp(config);
 const {
   validateSignupData,
@@ -39,9 +40,13 @@ exports.signup = (req, res) => {
     })
     .then((idToken) => {
       token = idToken;
+
+      const hashedPassword = bcrypt.hashSync(newUser.password, 6);
+
       const userCredentials = {
         userName: newUser.userName,
         email: newUser.email,
+        password: hashedPassword,
         createdAt: new Date().toISOString(),
         userId,
       };
@@ -76,7 +81,7 @@ exports.login = (req, res) => {
       return data.user.getIdToken();
     })
     .then((token) => {
-      return res.json({ token });
+      return res.json({ token, user });
     })
     .catch((err) => {
       console.error(err);
@@ -87,3 +92,16 @@ exports.login = (req, res) => {
       } else return res.status(500).json({ error: err.code });
     });
 };
+
+// exports.getCurrentUser = (req, res) => {
+//   var user = firebase.auth().currentUser;
+//   var name, email, userId;
+
+//   if (user != null) {
+//     name = user.displayName;
+//     email = user.email;
+//     userId = user.userId; // The user's ID, unique to the Firebase project. Do NOT use
+//     // this value to authenticate with your backend server, if
+//     // you have one. Use User.getToken() instead.
+//   }
+// };
