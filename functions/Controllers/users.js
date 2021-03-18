@@ -92,3 +92,24 @@ exports.login = (req, res) => {
       } else return res.status(500).json({ error: err.code });
     });
 };
+
+exports.getAuthenticatedUser = (req, res) => {
+  let userData;
+  db.doc(`/users/${req.user.userName}`)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        userData = doc.data();
+        return res.json(userData);
+      }
+      // return res.json(userData);
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.code === "auth/argument-error") {
+        return res
+          .status(403)
+          .json({ general: "Wrong credentials, please try again" });
+      } else return res.status(500).json({ error: err.code });
+    });
+};

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { signup, login } = require("../Controllers/users");
+const { signup, login, getAuthenticatedUser } = require("../Controllers/users");
+const FBAuth = require("../Utils/fbauth");
 
 /**
  * @route POST /login
@@ -21,5 +22,6 @@ router.post("/signup", signup);
  * @description Get Current User
  * @access Public
  */
+router.get("/me", FBAuth, getAuthenticatedUser);
 
 module.exports = router;
