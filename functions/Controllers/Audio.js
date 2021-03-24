@@ -9,20 +9,22 @@ exports.getAudioList = (req, res) => {
     .limit(10)
     .get()
     .then((data) => {
-      let audioList = [];
-      data.forEach((doc) => {
-        audioList.push(doc.data());
-      });
-      return res.json(audioList);
+      if (data) {
+        let audioList = [];
+        data.forEach((doc) => {
+          audioList.push(doc.data());
+        });
+        return res.json(audioList);
+      } else {
+        return res.status(404).json({ error: "Audio list not found" });
+      }
     })
     .catch((err) => console.error(err));
 };
 
 exports.getSingleAudio = (req, res) => {
   let singleAudio = {};
-  console.log("SINGLEAUDIO", req.params.audioId);
-  const reqAudio = req.params.audioId;
-  db.doc("rawData/" + reqAudio)
+  db.doc(`rawData/${req.params.audioId}`)
     .get()
     .then((doc) => {
       // console.log("DOOOCCC", doc);
@@ -40,7 +42,6 @@ exports.getSingleAudio = (req, res) => {
 };
 
 exports.deleteSingleAudio = (req, res) => {
-  console.log("DeleteSINGLEAUDIO", req.params.audioId);
   db.collection("rawData")
     .doc(`${req.params.audioId}`)
     .delete()
@@ -61,6 +62,7 @@ exports.createSingleAudio = (req, res) => {
     duration: req.body.duration,
     fileName: req.body.fileName,
     gibbonCalls: req.body.gibbonCalls,
+    gibbonCallsList: req.body.gibbonCallList,
     recordDate: req.body.recordDate,
   };
 
@@ -78,60 +80,44 @@ exports.createSingleAudio = (req, res) => {
     .then(() => {
       return res
         .status(201)
-        .json({ createAudio })
-        .catch((err) => {
-          return res.status(500).json({ error: err.code });
-        });
+        .json({ createAudio: "Audio was created successfully " });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.code });
     });
 };
 
-//       console.error(err);
-//       if (err.code === "auth/email-already-in-use") {
-//         return res.status(400).json({ email: "Email is already in use" });
-//       } else {
-//       }
-//     });
+exports.getFilteredAudioList = (req, res) => {
+  let query = {
+    page: req.params.page,
+    limit: req.params.limit,
+    sortBy: req.params.sortBy || "recordDate",
+  };
 
-// db.doc(`/users/${newUser.userName}`)
-//     .get()
-//     .then((doc) => {
-//       if (doc.exists) {
-//         return res
-//           .status(400)
-//           .json({ userName: "this email has already taken" });
-//       } else {
-//         return firebase
-//           .auth()
-//           .createUserWithEmailAndPassword(newUser.email, newUser.password);
-//       }
-//     })
-//     .then((data) => {
-//       userId = data.user.uid;
-//       return data.user.getIdToken();
-//     })
-//     .then((idToken) => {
-//       token = idToken;
+  // const startIndex = (query.page - 1) * query.limit;
+  // const endIndex = query.page * index;
 
-//       const hashedPassword = bcrypt.hashSync(newUser.password, 6);
+  page = parseInt(query.page) || 1;
+  limit = parseInt(query.limit) || 10;
+  sortBy = query.sortBy;
 
-//       const userCredentials = {
-//         userName: newUser.userName,
-//         email: newUser.email,
-//         password: hashedPassword,
-//         createdAt: new Date().toISOString(),
-//         userId,
-//       };
-//       return db.doc(`/users/${newUser.userName}`).set(userCredentials);
-//     })
-//     .then(() => {
-//       return res.status(201).json({ token });
-//     })
-//     .catch((err) => {
-//       console.error(err);
-//       if (err.code === "auth/email-already-in-use") {
-//         return res.status(400).json({ email: "Email is already in use" });
-//       } else {
-//         return res.status(500).json({ error: err.code });
-//       }
-//     });
-// };
+  console.log("request after", query, sortBy);
+
+  db.collection("rawData")
+    .orderBy(sortBy, "desc")
+    // .startAfter(previousDoc)
+    .limit(limit)
+    .get()
+    .then((data) => {
+      if (data) {
+        let filteredaudioList = [];
+        data.forEach((doc) => {
+          filteredaudioList.push(doc.data());
+        });
+        return res.json(filteredaudioList);
+      } else {
+        return res.status(404).json({ error: "Audio list not found" });
+      }
+    })
+    .catch((err) => console.error(err));
+};

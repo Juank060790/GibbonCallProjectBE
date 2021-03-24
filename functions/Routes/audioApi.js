@@ -5,6 +5,7 @@ const {
   getSingleAudio,
   createSingleAudio,
   deleteSingleAudio,
+  getFilteredAudioList,
 } = require("../Controllers/Audio");
 const FBAuth = require("../Utils/fbauth");
 
@@ -35,5 +36,16 @@ router.post("/createaudio", FBAuth, createSingleAudio);
  * @access  private
  */
 router.delete("/deletesingleaudio/:audioId", FBAuth, deleteSingleAudio);
+
+/**
+ * @route get
+ * @description Get filtered Audio List
+ * @access  private
+ */
+router.get(
+  "/audiolist/filter/page:page/limit:limit/sortBy:sortBy",
+  FBAuth,
+  getFilteredAudioList
+);
 
 module.exports = router;
