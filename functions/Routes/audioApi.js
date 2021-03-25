@@ -43,7 +43,7 @@ router.delete("/deletesingleaudio/:audioId", FBAuth, deleteSingleAudio);
  * @access  private
  */
 router.get(
-  "/audiolist/filter/page:page/limit:limit/sortBy:sortBy",
+  "/audiolist/filter/page:page/limit:limit/sortBy:sortBy/order:order",
   FBAuth,
   getFilteredAudioList
 );

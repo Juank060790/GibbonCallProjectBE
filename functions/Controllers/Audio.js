@@ -92,7 +92,9 @@ exports.getFilteredAudioList = (req, res) => {
     page: req.params.page,
     limit: req.params.limit,
     sortBy: req.params.sortBy || "recordDate",
+    order: req.params.order || "desc",
   };
+  console.log("request after", query);
 
   // const startIndex = (query.page - 1) * query.limit;
   // const endIndex = query.page * index;
@@ -100,11 +102,10 @@ exports.getFilteredAudioList = (req, res) => {
   page = parseInt(query.page) || 1;
   limit = parseInt(query.limit) || 10;
   sortBy = query.sortBy;
-
-  console.log("request after", query, sortBy);
+  order = query.order;
 
   db.collection("rawData")
-    .orderBy(sortBy, "desc")
+    .orderBy(sortBy, order)
     // .startAfter(previousDoc)
     .limit(limit)
     .get()
