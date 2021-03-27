@@ -27,7 +27,7 @@ exports.getSingleAudio = (req, res) => {
   db.doc(`rawData/${req.params.audioId}`)
     .get()
     .then((doc) => {
-      // console.log("DOOOCCC", doc);
+      console.log("DOOOCCC", doc);
       if (doc.exists) {
         singleAudio = doc.data();
         return res.json(singleAudio);
@@ -121,4 +121,19 @@ exports.getFilteredAudioList = (req, res) => {
       }
     })
     .catch((err) => console.error(err));
+};
+
+exports.addCommentRawAudio = (req, res) => {
+  let comment = req.body.comments;
+  db.collection("rawData")
+    .doc(`${req.params.audioId}`)
+    .update({
+      comments: comment,
+    })
+    .then(() => {
+      return res.status(201).json("Comment was created successfully ");
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.code });
+    });
 };

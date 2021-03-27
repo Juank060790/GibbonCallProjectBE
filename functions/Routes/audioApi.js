@@ -6,6 +6,7 @@ const {
   createSingleAudio,
   deleteSingleAudio,
   getFilteredAudioList,
+  addCommentRawAudio,
 } = require("../Controllers/Audio");
 const FBAuth = require("../Utils/fbauth");
 
@@ -47,5 +48,12 @@ router.get(
   FBAuth,
   getFilteredAudioList
 );
+
+/**
+ * @route POST
+ * @description Add comment to RawAudio
+ * @access  private
+ */
+router.put("/audiolist/addcomment/:audioId", FBAuth, addCommentRawAudio);
 
 module.exports = router;
