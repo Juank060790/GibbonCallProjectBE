@@ -7,15 +7,16 @@ const {
   deleteSingleAudio,
   getFilteredAudioList,
   addCommentRawAudio,
+  getCallsSingleAudio,
 } = require("../Controllers/Audio");
 const FBAuth = require("../Utils/fbauth");
 
-/**
- * @route Get
- * @description Get all data
- * @access  private
- */
-router.get("/audiolist", FBAuth, getAudioList);
+// /**
+//  * @route Get
+//  * @description Get all data
+//  * @access  private
+//  */
+// router.get("/audiolist", FBAuth, getAudioList);
 
 /**
  * @route Get
@@ -44,7 +45,7 @@ router.delete("/deletesingleaudio/:audioId", FBAuth, deleteSingleAudio);
  * @access  private
  */
 router.get(
-  "/audiolist/filter/page:page/limit:limit/sortBy:sortBy/order:order",
+  "/audiolist/filter/:limit/:sortBy/:order/:startDoc",
   FBAuth,
   getFilteredAudioList
 );
@@ -55,5 +56,14 @@ router.get(
  * @access  private
  */
 router.put("/audiolist/addcomment/:audioId", FBAuth, addCommentRawAudio);
+
+// CALLS
+
+/**
+ * @route Get
+ * @description Get Calls of a single audio
+ * @access  private
+ */
+router.get("/calls/callsIds", FBAuth, getCallsSingleAudio);
 
 module.exports = router;

@@ -3,33 +3,53 @@ const config = require("../Utils/config");
 const firebase = require("firebase");
 
 // To UPDATE COLLECTION NAME
-exports.getAudioList = (req, res) => {
-  db.collection("rawData")
-    // .orderBy()
-    .limit(10)
-    .get()
-    .then((data) => {
-      if (data) {
-        let audioList = [];
-        data.forEach((doc) => {
-          audioList.push(doc.data());
-        });
-        return res.json(audioList);
-      } else {
-        return res.status(404).json({ error: "Audio list not found" });
-      }
-    })
-    .catch((err) => console.error(err));
-};
+// exports.getAudioList = (req, res) => {
+//   db.collection("rawData")
+//     // .orderBy()
+//     .limit(10)
+//     .get()
+//     .then((data) => {
+//       if (data) {
+//         let audioList = [];
+//         data.forEach((doc) => {
+//           audioList.push(doc.data());
+//         });
+//         return res.json(audioList);
+//       } else {
+//         return res.status(404).json({ error: "Audio list not found" });
+//       }
+//     })
+//     .catch((err) => console.error(err));
+// };
 
 exports.getSingleAudio = (req, res) => {
   let singleAudio = {};
+  let callsSingleAudio = {};
   db.doc(`rawData/${req.params.audioId}`)
     .get()
     .then((doc) => {
-      console.log("DOOOCCC", doc);
+      // console.log("DOOOCCC", doc);
       if (doc.exists) {
         singleAudio = doc.data();
+
+        return res.json(singleAudio);
+      } else {
+        return res.status(404).json({ error: "Audio not found" });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
+    });
+};
+
+exports.getCallsSingleAudio = (req, res) => {
+  db.doc(`calls/${req.params.audioId}`)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        singleAudio = doc.data();
+
         return res.json(singleAudio);
       } else {
         return res.status(404).json({ error: "Audio not found" });
@@ -89,24 +109,30 @@ exports.createSingleAudio = (req, res) => {
 
 exports.getFilteredAudioList = (req, res) => {
   let query = {
-    page: req.params.page,
+    startDoc: req.params.startDoc || 0,
     limit: req.params.limit,
     sortBy: req.params.sortBy || "recordDate",
     order: req.params.order || "desc",
   };
-  console.log("request after", query);
 
   // const startIndex = (query.page - 1) * query.limit;
+  // let latestDoc = query.latestDoc;
+
+  console.log("request after", query, "PAGEEE AUDIOID");
+
+  // const batch = db.batch();
+  // batch.set();
+
   // const endIndex = query.page * index;
 
-  page = parseInt(query.page) || 1;
-  limit = parseInt(query.limit) || 10;
   sortBy = query.sortBy;
   order = query.order;
-
+  startDoc = query.startDoc;
+  limit = parseInt(query.limit) || 10;
+  console.log("STARTDOC", startDoc);
   db.collection("rawData")
     .orderBy(sortBy, order)
-    // .startAfter(previousDoc)
+    .startAfter(startDoc)
     .limit(limit)
     .get()
     .then((data) => {

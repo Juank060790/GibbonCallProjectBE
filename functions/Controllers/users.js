@@ -106,7 +106,10 @@ exports.getAuthenticatedUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      if (err.code === "auth/argument-error") {
+      if (
+        err.code === "auth/argument-error" ||
+        err.code === "auth/id-token-expired"
+      ) {
         return res
           .status(403)
           .json({ general: "Wrong credentials, please try again" });
