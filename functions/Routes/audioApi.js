@@ -64,6 +64,6 @@ router.put("/audiolist/addcomment/:audioId", FBAuth, addCommentRawAudio);
  * @description Get Calls of a single audio
  * @access  private
  */
-router.get("/calls/callsIds", FBAuth, getCallsSingleAudio);
+router.get("/calls/:callId", FBAuth, getCallsSingleAudio);
 
 module.exports = router;

@@ -2,51 +2,12 @@ const { db, admin } = require("../Utils/admin");
 const config = require("../Utils/config");
 const firebase = require("firebase");
 
-// To UPDATE COLLECTION NAME
-// exports.getAudioList = (req, res) => {
-//   db.collection("rawData")
-//     // .orderBy()
-//     .limit(10)
-//     .get()
-//     .then((data) => {
-//       if (data) {
-//         let audioList = [];
-//         data.forEach((doc) => {
-//           audioList.push(doc.data());
-//         });
-//         return res.json(audioList);
-//       } else {
-//         return res.status(404).json({ error: "Audio list not found" });
-//       }
-//     })
-//     .catch((err) => console.error(err));
-// };
-
 exports.getSingleAudio = (req, res) => {
   let singleAudio = {};
-  let callsSingleAudio = {};
   db.doc(`rawData/${req.params.audioId}`)
     .get()
     .then((doc) => {
       // console.log("DOOOCCC", doc);
-      if (doc.exists) {
-        singleAudio = doc.data();
-
-        return res.json(singleAudio);
-      } else {
-        return res.status(404).json({ error: "Audio not found" });
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({ error: err.code });
-    });
-};
-
-exports.getCallsSingleAudio = (req, res) => {
-  db.doc(`calls/${req.params.audioId}`)
-    .get()
-    .then((doc) => {
       if (doc.exists) {
         singleAudio = doc.data();
 
@@ -161,5 +122,25 @@ exports.addCommentRawAudio = (req, res) => {
     })
     .catch((err) => {
       return res.status(500).json({ error: err.code });
+    });
+};
+
+// SINGLE CALLS
+
+exports.getCallsSingleAudio = (req, res) => {
+  let singleCall = {};
+  db.doc(`calls/${req.params.callId}`)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        singleCall = doc.data();
+        return res.json(singleCall);
+      } else {
+        return res.status(404).json({ error: "Audio not found" });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
     });
 };
